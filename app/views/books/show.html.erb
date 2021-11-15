@@ -20,9 +20,59 @@
               <td><%= link_to "Edit", edit_book_path(@book.id), class:"btn btn-sm btn-success edit_book_29457" %></td>
               <td><%= link_to "Destroy", book_path(@book.id), method: :delete, class:"btn btn-sm btn-danger destroy_book_29457" %></td>
 　　　　　<% end %>
+　　　　　<td>
+　　　　　  <%=  %>
+　　　　　  <% if @book.favorited_by?(current_user) %>
+              <p>
+                <%= link_to book_favorites_path(@book), method: :delete do %>
+                  <i class="fas fa-heart"><%= @book.favorites.count %></i>
+                <% end %>
+              </p>
+              <% else %>
+              <p>
+                <%= link_to book_favorites_path(@book), method: :post do %>
+                  <i class="fas fa-heart"><%= @book.favorites.count %>いいね</i>
+                <% end %>
+              </p>
+            <% end %>
+　　　　　</td>
         </tr>
     </tbody>
   </table>
+
+    <div>
+     <p>コメント件数：<%= @book.book_comments.count %></p>
+       <% @book.book_comments.each do |book_comment| %>
+         <p><%= attachment_image_tag book_comment.user, :profile_image, :fill, 60, 60, fallback: "no_image.jpg"%></p>
+            <%= link_to book_comment.user.name, user_path(book_comment.user_id) %>
+            <%= book_comment.created_at.strftime('%Y/%m/%d') %><%= book_comment.comment %>
+            <% if book_comment.user == current_user %>
+              <div>
+                <%= link_to "Destroy", book_book_comment_path(book_comment.book, book_comment), method: :delete, class:"btn btn-sm btn-danger destroy_book_29457" %>
+              </div>
+            <% end %>
+            <% if @book.favorited_by?(current_user) %>
+              <p>
+                <%= link_to book_favorites_path(@book), method: :delete do %>
+                  <p><i class="fas fa-heart"></i></p><%= @book.favorites.count %> いいね
+                <% end %>
+              </p>
+              <% else %>
+              <p>
+                <%= link_to book_favorites_path(@book), method: :post do %>
+                  <p><i class="fas fa-heart"></i> <p><%= @book.favorites.count %>いいね
+                <% end %>
+              </p>
+            <% end %>
+       <% end %>
+    </div>
+    <div>
+    <%= form_with(model:[@book, @book_comment], local: true) do |f| %>
+    <%= f.text_area :comment, size: "60x5" %>
+    <%= f.submit '送信', class:"btn btn-success"%>
+  　<% end %>
+   </div>
+
 </div>
 </div>
 
